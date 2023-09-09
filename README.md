@@ -301,7 +301,7 @@ The reason for this is that this project was used solely for learning about netw
 
 ### Configure securelogin.php
 
-You can find the code [Here](/source/securelogin.php).
+You can find the code [here](/securelogin.php).
 
 
 
