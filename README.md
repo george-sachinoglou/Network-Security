@@ -1,4 +1,4 @@
-# Network Security
+# Network Security (AUEB Course)
 
 
 :warning: **This is not a guide.**
