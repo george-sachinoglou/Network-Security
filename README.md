@@ -1,6 +1,12 @@
-# Network_Security
+# Network Security
 
-The purpose of this project is to create a Cent OS 7 VM on [okeanos](https://okeanos.grnet.gr) and connect to it, using a client such as [PuTTY](https://www.putty.org/).
+[!IMPORTANT]
+This is not a guide.
+
+The purpose of this project is to get used to the tools used for secure connection and encryption on the web. 
+I created a Cent OS 7 (Linux) VM on [okeanos](https://okeanos.grnet.gr) and connected to it, using a client such as [PuTTY](https://www.putty.org/) but there will not be a step-to-step on how to set those up.
+You can use the OS and ssh client of your choice.
+
 The project is split into two subprojects:
 
 ## OpenSSL Contents
@@ -32,6 +38,18 @@ The project is split into two subprojects:
   
   [Create a site](#Create-a-site)
   -[Create site and configure httpd.conf](#Create-site-and-configure-httpd.conf)
+
+## SQL Injection Contents
+
+[Database Initialization and Security](#Database-Initialization-and-Security)
+- [Install and start MariaDB](#Install-and-start-MariaDB)
+- [Create Database](#Create-Database)
+
+[PHP](#PHP)
+- [Install PHP](#Install-PHP)
+
+[Secure login](#Secure-login)
+- [Configure securelogin.php](#EConfigure-securelogin.php)
   
 # OpenSSL
 
@@ -220,8 +238,68 @@ $ vi /etc/httpd/conf/httpd.conf
 DocumentRoot: /var/www/html
 ```
 
+# SQL Injection
 
+> We need a database to store our data and a proper encryption method for security.
 
+## Database Initialization and Security
+
+> We will use MariaDB for our database, but you can use MySQL or PostgreSQL as well.
+> 
+> We need to make sure the password is encrypted for privacy purposes and in case of illegal access to the database.
+> Ways to achieve that is by:
+> * Using an one-way function. Instead of the password being stored unchanged we will store the result of said function.
+>   During login we insert the password to the one-way funtion and we compare it to the list elements for matching.
+> * Using password salting to protect database from rainbow table attacks. The salt is added to the password table along
+>   with the result of the one-way funtion. HashSalted(password) = hash(hash(password)+salt).
+>
+> We are going to use salt to protect our data.
+
+### Install and start MariaDB
+
+```
+$ yum install mariadb-server mariadb-libs mariadb
+$ sudo systemctl start mariadb
+```
+
+### Create Database
+
+```
+MariaDB [(none)]> CREATE DATABASE GDPR;
+MariaDB [(none)]> USE GDPR;
+```
+
+```
+MariaDB [(GDPR)]> CREATE TABLE users (
+  username VARCHAR(255) PRIMARY KEY NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  description VARCHAR(255),
+  salt VARCHAR(255)  
+    );
+```
+
+## PHP
+
+> This section is named PHP but you can use any framework you wish.
+
+### Install PHP
+
+```
+$ yum install php
+```
+
+## Secure login
+
+> We will create the securelogin.php in /var/www/html which will run the queries necessary when attemting to login.
+> This also contains the one way function we used to encrypt the passwords.
+
+[!NOTE]
+This project does not include a sign up method. The users and their passwords were stored manually in the database.
+The reason for this is that this project was used solely for learning about network security and storing items in a database did not seem necessary.
+
+### Configure securelogin.php
+
+You can find the code [Here](/source/securelogin.php).
 
 
 
