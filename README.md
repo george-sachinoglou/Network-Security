@@ -1,7 +1,8 @@
 # Network Security
 
-[!IMPORTANT]
-This is not a guide.
+
+:warning: **This is not a guide.**
+
 
 The purpose of this project is to get used to the tools used for secure connection and encryption on the web. 
 I created a Cent OS 7 (Linux) VM on [okeanos](https://okeanos.grnet.gr) and connected to it, using a client such as [PuTTY](https://www.putty.org/) but there will not be a step-to-step on how to set those up.
@@ -293,9 +294,10 @@ $ yum install php
 > We will create the securelogin.php in /var/www/html which will run the queries necessary when attemting to login.
 > This also contains the one way function we used to encrypt the passwords.
 
-[!NOTE]
-This project does not include a sign up method. The users and their passwords were stored manually in the database.
-The reason for this is that this project was used solely for learning about network security and storing items in a database did not seem necessary.
+
+:warning: **This project does not include a sign up method. The users and their passwords were stored manually in the database.
+The reason for this is that this project was used solely for learning about network security and storing items in a database did not seem necessary.**
+
 
 ### Configure securelogin.php
 
