@@ -95,7 +95,6 @@ $ vi ~/.ssh/authorised_keys
 ```
 $ cd ..
 $ chmod -R o+rx /home 
-$ chmod -R o+rx /root
 ```
 
 ## Firewall
