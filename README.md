@@ -19,23 +19,23 @@ The project is split into two subprojects:
   
   [User permissions](#User-permissions)
   - [Modify permissions](#Modify-permissions)
+
+  [Firewall](#Firewall)
+  - [Enable http and https](#Enable-http-and-https)
+  - [Remove password for ssh connection](#Remove-password-for-ssh-connection)
   
   [Apache server initialization](#Apache-server-initialization)
   - [Install and start](#Install-and-start)
   - [Check-server](#Check-server)
-  
-  [Firewall](#Firewall)
-  - [Enable http and https](#Enable-http-and-https)
-  - [Remove password for ssh connection](#Remove-password-for-ssh-connection)
+
+  [Apache configuration](#Apache-configuration)
+  - [HTTP to HTTPS](#HTTP-to-HTTPS)
+  - [Apply configuration](#Applying-configuration)
   
   [Create CA, CSR and SSL certificates](#Create-CA-CSR-and-SSL-certificates)
   - [Install OpenSSL](#Install-OpenSSL)
   - [Certificate Authority (CA)](#Certificate-Authority-CA)
   - [Generate key for SSL Certificates](#Generate-key-for-SSL-Certificates)
-  
-  [Apache configuration](#Apache-configuration)
-  - [HTTP to HTTPS](#HTTP-to-HTTPS)
-  - [Apply configuration](#Applying-configuration)
   
   [Create a site](#Create-a-site)
   -[Create site and configure httpd.conf](#Create-site-and-configure-httpd.conf)
@@ -98,27 +98,6 @@ $ chmod -R o+rx /home
 $ chmod -R o+rx /root
 ```
 
-## Apache server initialization
-
-> Setting up Apache web-server. Whenever a change is made do
-```
-$ systemctl restart sshd
-```
-
-### Install and start
-
-```
-$ yum install httpd
-$ systemctl start httpd
-```
-
-### Check server
-
-```
-$ systemctl status httpd
-$ systemctl status sshd
-```
-
 ## Firewall
 
 > Configuring firewall with http and https access.
@@ -142,6 +121,51 @@ $ vi /etc/ssh/sshd_config
 
 ```
 PasswordAuthentication no
+```
+
+
+## Apache server initialization
+
+> Setting up Apache web-server. Whenever a change is made do
+```
+$ systemctl restart sshd
+```
+
+### Install and start
+
+```
+$ yum install httpd
+$ systemctl start httpd
+```
+
+### Check server
+
+```
+$ systemctl status httpd
+$ systemctl status sshd
+```
+
+## Apache configuration
+
+### HTTP to HTTPS
+
+> Open the non-ssl.conf and add the following lines.
+
+```
+$ vi /etc/httpd/conf.d/non-ssl.conf
+```
+
+```
+<VirtualHost *:80>
+       ServerName server
+        Redirect "/" "https://server/"
+</VirtualHost>
+```
+
+### Apply configuration
+
+```
+$ systemctl restart httpd.service
 ```
 
 ## Create CA, CSR and SSL certificates
@@ -194,29 +218,6 @@ $ vi /etc/httpd/conf.d/<server_hostname>.conf
     SSLCertificateFile /etc/pki/tls/certs/<server_name>.crt
     SSLCertificateKeyFile /etc/pki/tls/private/<server_name>.key
 </VirtualHost>
-```
-
-## Apache configuration
-
-### HTTP to HTTPS
-
-> Open the non-ssl.conf and add the following lines.
-
-```
-$ vi /etc/httpd/conf.d/non-ssl.conf
-```
-
-```
-<VirtualHost *:80>
-       ServerName <server_hostname>
-        Redirect "/" "https://server/"
-</VirtualHost>
-```
-
-### Apply configuration
-
-```
-$ systemctl restart httpd.service
 ```
 
 ## Create a site
@@ -299,7 +300,32 @@ The reason for this is that this project was used solely for learning about netw
 
 ### Configure securelogin.php
 
-You can find the code [here](/securelogin.php).
+```
+
+<?php
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    $connection = mysqli_connect('localhost','root','','GDPR');
+
+    $username = stripcslashes($username);
+    $password = stripcslashes($password);
+    $username = mysqli_real_escape_string($connection, $username);
+    $password = mysqli_real_escape_string($connection, $password);
+
+    $query = "SELECT * FROM users WHERE username = '$username' AND password = SHA2(concat('$password',salt),256)";
+    $res = mysqli_query($connection, $query);
+    $found = mysqli_num_rows($res);
+
+    if($found == 1){
+        echo "<h1> LOGGED IN </center></h1>";
+    }
+    else{
+        echo "<h1> LOGIN UNSUCCESFUL </h1>";
+        }
+?>
+
+```
 
 
 
