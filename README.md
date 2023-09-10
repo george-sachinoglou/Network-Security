@@ -66,8 +66,6 @@ The project is split into two subprojects:
 > In order to login with an ssh key through PuTTY we need to create a new 
 ```
 ssh-keygen
-~>ssh-keygen Generating public/private rsa key pair. 
-
 ```
 
 ### Create user
@@ -171,8 +169,8 @@ $ openssl req -new -x509 -days 365 -key /etc/pki/CA/private/ourCA.key -out /etc/
 > We generate yet another key with OpenSSL and use it to create a CSR Certificate. Fill your information where needed.
 
 ```
-$ openssl genrsa -out /etc/pki/tls/private/<server_name>.key 1024
-$ openssl req -new -key /etc/pki/tls/private/<server_name>.key -out /etc/pki/tls/<server_name>.csr
+$ openssl genrsa -out /etc/pki/tls/private/server.key 1024
+$ openssl req -new -key /etc/pki/tls/private/<server_name>.key -out /etc/pki/tls/server.csr
 ```
 
 > We send the CSR for a CA signature and then we return it back.
@@ -211,7 +209,7 @@ $ vi /etc/httpd/conf.d/non-ssl.conf
 ```
 <VirtualHost *:80>
        ServerName <server_hostname>
-        Redirect "/" "https://<server_hostname>/"
+        Redirect "/" "https://server/"
 </VirtualHost>
 ```
 
